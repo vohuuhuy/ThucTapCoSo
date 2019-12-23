@@ -1,0 +1,149 @@
+import React, { useState } from 'react'
+import { InputNumber, Button } from 'antd'
+import { sleep } from '../../common'
+import BackHome from '../backHome'
+
+function ExpressionZero (props) {
+  const [element, setElement] = useState([])
+  const [disInput, setDisInput] = useState(false)
+  const [opera, setOpera] = useState([])
+  const [outRes, setOutRes] = useState([])
+  const [time, setTime] = useState(0)
+
+  const handleChangeElementNumber = value => {
+    const array = new Array(value).fill(0)
+    setElement(array)
+  }
+
+  const runAlogrithm = () => {
+    const size = element.length
+    let operation = new Array(element.length).fill('+')
+    const recursive = async (i, sum) => {
+      if (i === size) {
+        if (!sum) {
+          await sleep(time)
+          const res = outRes
+          res.push(operation)
+          setOutRes(res)
+        }
+      } else {
+        for (let j = 0; j<= 1; j++) {
+          await sleep(time)
+          operation = operation.map((ope, idx) => idx === i ? (!j ? '+' : '-') : ope)
+          setOpera(operation)
+          if (!j) {
+            await recursive(i+1, sum + element[i])
+          } else {
+            await recursive(i+1, sum - element[i])
+          }
+        }
+        opera[i] = '+'
+      }
+    }
+    recursive(0, 0)
+  }
+
+  const handleStart = () => {
+    setDisInput(!disInput)
+    runAlogrithm()
+  }
+
+  const conSum = () => {
+    let sum = 0
+    element.forEach((ele, idx) => sum += opera[idx] === '+' ? ele : - ele)
+    return sum.toString()
+  }
+
+  return (
+    <>
+      <BackHome history={props.history}/>
+      <div>
+        <p className='header'>Biểu thức zero</p>
+        <div className='input'>
+          <label style={{ marginRight: 20 }} htmlFor='elementNumber'>
+            Nhập số lượng phần tử:
+          </label>
+          <InputNumber
+            id='elementNumber'
+            defaultValue={0}
+            min={0}
+            max={9}
+            onChange={value => handleChangeElementNumber(value)}
+            disabled={disInput}
+          />
+        </div>
+        <div className='input'>
+          <label style={{ marginRight: 20 }} htmlFor='time'>
+            Time (ms):
+          </label>
+          <InputNumber
+            id='time'
+            defaultValue={0}
+            min={0}
+            max={1000}
+            onChange={value => setTime(value)}
+            disabled={disInput}
+          />
+        </div>
+        <div style={{
+          display: 'flex', alignItems: 'center', fontSize: 20,
+          justifyItems: 'center', justifyContent: 'space-between'
+        }}>
+          {element.map((ele, idx) => (
+            <>
+              <div style={{ width: 22 }}>
+                {
+                  disInput ? opera[idx] : ''
+                }
+              </div>
+              <InputNumber
+                style={{ boxSizing: 'border-box', marginRight: 5 }}
+                defaultValue={ele}
+                key={idx}
+                disabled={disInput}
+                onChange={value => setElement(element.map((ele, i) =>
+                  i === idx ? value : ele
+                ))}
+              />
+            </>
+          ))}
+          {
+            disInput ? ` =  ${conSum()}` : ''
+          }
+        </div>
+        <div style={{ marginTop: 20, marginBottom: 20 }}>
+          {
+            element.length > 1
+            ? (
+              <Button
+                onClick={handleStart}
+                disabled={disInput}
+              >
+                Bắt đầu
+              </Button>
+            )
+            : <></>
+          }
+        </div>
+        <div style={{ fontSize: 20 }}>
+          {
+            outRes.map((res, idx) => {
+              let string  = ''
+              element.forEach((ele, idx) =>
+                string += ` ${res[idx]} ${ele}`
+              )
+              let sum = 0
+              element.forEach((ele, i) => sum += outRes[idx][i] === '+' ? ele : - ele)
+              string += ` = ${sum}`
+              return (
+                <div key={idx}>{string}</div>
+              )
+            })
+          }
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default ExpressionZero

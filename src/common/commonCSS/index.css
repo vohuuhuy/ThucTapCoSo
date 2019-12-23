@@ -1,0 +1,9 @@
+.header {
+  font-size: 30px !important;
+  font-weight: bolder !important;
+}
+
+.input {
+  margin-bottom: 13px;
+  display: block;
+}
