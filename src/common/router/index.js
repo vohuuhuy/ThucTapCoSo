@@ -7,5 +7,9 @@ export const Routers = [
   {
     name: 'Người đi du lịch',
     router: '/traveler'
+  },
+  {
+    name: 'Thỏ nhặt cà rốt',
+    router: '/rabbitCarrot'
   }
 ]

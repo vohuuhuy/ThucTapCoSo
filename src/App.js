@@ -3,6 +3,7 @@ import { Switch, Route, useHistory } from 'react-router-dom'
 import Home from './page/home'
 import ExpressionZero from './page/expressionZero'
 import Traveler from './page/traveler'
+import RabbitCarrot from './page/rabbitCarrot'
 import 'antd/dist/antd.css'
 import './App.css'
 import './common/commonCSS/index.css'
@@ -20,6 +21,11 @@ function App() {
         </Route>
         <Route path='/traveler'>
           <Traveler
+            history={history}
+          />
+        </Route>
+        <Route path='/rabbitCarrot'>
+          <RabbitCarrot
             history={history}
           />
         </Route>
