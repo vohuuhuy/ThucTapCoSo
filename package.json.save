@@ -1,17 +1,13 @@
 {
   "name": "ttcs",
+  npm install node-env-run nodemon npm-run-all express-pino-logger pino-colada --save-dev
+
   "version": "0.1.0",
-  "proxy": "http://localhost:3000",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "@vx/group": "^0.0.193-alpha.0",
-    "@vx/mock-data": "^0.0.193-alpha.0",
-    "@vx/network": "^0.0.193-alpha.0",
-    "@vx/scale": "^0.0.193-alpha.0",
-    "@vx/shape": "^0.0.193-alpha.0",
     "add": "^2.0.6",
     "antd": "^3.26.3",
     "react": "^16.12.0",
@@ -23,7 +19,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "server": "node-env-run server --exec nodemon | pino-colada",
+    "server": "node-env-run server --exec nodemon",
     "dev": "run-p server start",
     "eject": "react-scripts eject"
   },
