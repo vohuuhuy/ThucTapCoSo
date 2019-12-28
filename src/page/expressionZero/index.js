@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { InputNumber, Button } from 'antd'
+import { InputNumber, Button, Icon, Modal } from 'antd'
 import { sleep } from '../../common'
-import BackHome from '../backHome'
+import BackHome from '../backHome'  
 
 function ExpressionZero (props) {
   const [element, setElement] = useState([])
@@ -44,8 +44,16 @@ function ExpressionZero (props) {
   }
 
   const handleStart = () => {
-    setDisInput(!disInput)
-    runAlogrithm()
+    if (element.some(ele => !ele)) {
+      Modal.warning({
+        title: 'Chú ý!',
+        content: 'Bạn nên nhập giá trị các phần tử khác 0.',
+        okText: 'Đã hiểu'
+      })
+    } else {
+      setDisInput(!disInput)
+      runAlogrithm()
+    }
   }
 
   const conSum = () => {
@@ -54,11 +62,29 @@ function ExpressionZero (props) {
     return sum.toString()
   }
 
+  const modalDetail = () => {
+    Modal.info({
+      title: (<div className='detail-title'>Biểu thức zero</div>),
+      content: (<div className='detail-content'>Cho một số tự nhiên N ≤ 9
+        , giữa các số từ 1 đến N hãy thêm vào các dấu + hoặc –
+         hoặc không thêm dấu sao cho kết quả thu được bằng 0.
+        </div>),
+      okText: 'Đã hiểu'
+    })
+  }
+
   return (
     <>
       <BackHome history={props.history}/>
       <div>
-        <p className='header'>Biểu thức zero</p>
+        <p className='header'>
+          Biểu thức zero
+          <Icon
+            className='icon-detail'
+            type='info-circle'
+            onClick={modalDetail} 
+          />
+        </p>
         <div className='input'>
           <label style={{ marginRight: 20 }} htmlFor='elementNumber'>
             Nhập số lượng phần tử:
@@ -87,7 +113,7 @@ function ExpressionZero (props) {
         </div>
         <div style={{
           display: 'flex', alignItems: 'center', fontSize: 20,
-          justifyItems: 'center', justifyContent: 'space-between'
+          justifyItems: 'center', justifyContent: 'space-evenly'
         }}>
           {element.map((ele, idx) => (
             <>

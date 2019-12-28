@@ -9,6 +9,23 @@
   overflow: auto;
 }
 
+.icon-detail {
+  margin-left: 5px !important;
+}
+
+.detai-content {
+  font-size: 15px;
+  font-weight: 500;
+  font-family: none;
+  color: #4bb6e2;
+}
+
+.detail-title {
+  font-weight: 900;
+  color: #4fb7e5;
+  font-size: 22px;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
