@@ -1,0 +1,18 @@
+.matrix-content {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.matrix-content {
+  display: flex;
+}
+
+.city {
+  width: 70px !important;
+}
+
+.path {
+  display: flex;
+  flex-direction: column;
+}

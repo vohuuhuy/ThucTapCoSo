@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import BackHome from '../backHome'
-import { Form, InputNumber, Modal, Icon } from 'antd'
+import { Form, InputNumber, Modal, Icon, Button } from 'antd'
 import './index.css'
+import { sleep } from '../../common'
 
 const Traveler = Form.create({ name: 'traveler' })(
   props => {
   const [numCity, setNumCity] = useState(0)
-  const [disable] = useState(false)
+  const [disable, setDisable] = useState(false)
+  const [matrix, setMatrix] = useState([])
+  const [res, setRes] = useState([])
 
   const modalDetail = () => {
     Modal.info({
@@ -29,6 +32,47 @@ const Traveler = Form.create({ name: 'traveler' })(
     })
   }
 
+  const onChangeNumberCity = useCallback(
+    (value) => {
+      const a = []
+      const b = []
+      for (let j = 0; j < value; j++) {
+        b.push(0)
+      }
+      for (let i = 0; i < value; i++) {
+        a.push(b)
+      }
+      setNumCity(value)
+      setMatrix(a)
+    }
+  , [numCity])
+
+  const onChangeCity = useCallback((value, i, j) => {
+    setMatrix(matrix.map((a, l) => a.map((b, k) =>
+      (l === i && k === j) || (l === j && k === i) ? value : b
+    )))
+  }, [matrix])
+
+  const onClickStart = useCallback(async () => {
+    setDisable(true)
+    const Try = async (i, price, lRes) => {
+      if (lRes.length === numCity && matrix[i][0] > 0) {
+        const s = lRes.map((x, i) => i ? `->${x}` : x).join('')
+        setRes([...res, s])
+        await sleep(1000)
+      } else {
+        for(const [j, a] of matrix[i].entries()) {
+          if (a > 0 && !lRes.some(x => x === j)) {
+            lRes.push(j)
+            await Try(j, price + a, lRes)
+            lRes.pop()
+          }
+        }
+      }
+    }
+    await Try(0, matrix[0][0], [0])
+  })
+
   return (
     <>
       <BackHome history={props.history}/>
@@ -47,9 +91,42 @@ const Traveler = Form.create({ name: 'traveler' })(
           id='elementNumber'
           defaultValue={numCity}
           min={0}
-          onChange={value => setNumCity(value)}
+          max={7}
+          onChange={value => onChangeNumberCity(value)}
           disabled={disable}
         />
+      </div>
+      <div className='matrix-content'>
+        {
+          matrix.map((a, i) => (
+            <div key={i} className='matrix-item'>
+              {
+                a.map((b, j) => (
+                  <InputNumber
+                    key={`${i}-${j}`}
+                    className='city'
+                    min={-1}
+                    defaultValue={matrix[i][j]}
+                    value={matrix[i][j]}
+                    disabled={i === j || disable}
+                    onChange={value => onChangeCity(value, i, j)}
+                  />
+                ))
+              }
+            </div>
+          ))
+        }
+      </div>
+      <Button
+        onClick={onClickStart}
+        disabled={disable}
+      >
+        Bắt đầu
+      </Button>
+      <div className='path'>
+        {disable && res.map((r, i) => (
+          <div key={i}>{r}</div>
+        ))}
       </div>
     </>
   )
