@@ -14,5 +14,10 @@
 
 .path {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  padding: 0 150px;
+  text-align: left;
+  font-size: 21px;
+  font-weight: 700;
+  justify-content: space-between;
 }

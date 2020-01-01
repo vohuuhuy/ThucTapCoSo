@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import BackHome from '../backHome'
-import { Form, InputNumber, Modal, Icon, Button } from 'antd'
+import { Form, InputNumber, Modal, Icon, Button, Checkbox } from 'antd'
 import './index.css'
 import { sleep } from '../../common'
 
@@ -10,6 +10,10 @@ const Traveler = Form.create({ name: 'traveler' })(
   const [disable, setDisable] = useState(false)
   const [matrix, setMatrix] = useState([])
   const [res, setRes] = useState([])
+  const [pri, setPri] = useState(0)
+  const [resT, setResT] = useState({ path: '', value: 0 })
+  const [time, setTime] = useState(0)
+  const [branch, setBranch] = useState(false)
 
   const modalDetail = () => {
     Modal.info({
@@ -18,7 +22,7 @@ const Traveler = Form.create({ name: 'traveler' })(
         Cho n thành phố đánh số từ 1 đến n và m tuyến đường giao thông hai chiều giữa chúng
         , mạng lưới giao thông này được cho bởi bảng C cấp nxn, ở đây
          C[i, j] = C[j, i] = Chi phí đi đoạn đường trực tiếp từ thành phố i đến thành phố j
-        . Giả thiết rằng C[i, i] = 0 với ∀i, C[i, j] = +∞ nếu
+        . Giả thiết rằng C[i, i] = 0 với ∀i, C[i, j] = +∞ (-1 khi nhập dữ liệu) nếu
          không có đường trực tiếp từ thành phố i đến thành phố j
         . Một người du lịch xuất phát từ thành phố 1,
          muốn đi thăm tất cả các thành phố còn lại mỗi thành phố đúng 1 lần và
@@ -55,22 +59,37 @@ const Traveler = Form.create({ name: 'traveler' })(
 
   const onClickStart = useCallback(async () => {
     setDisable(true)
+    let minPrice = 0
     const Try = async (i, price, lRes) => {
+      const s = lRes.map((x, i) => i ? ` -> ${x + 1}` : x + 1).join('')
       if (lRes.length === numCity && matrix[i][0] > 0) {
-        const s = lRes.map((x, i) => i ? `->${x}` : x).join('')
-        setRes([...res, s])
-        await sleep(1000)
+        setRes(s)
+        if (price < minPrice || !minPrice) {
+          minPrice = price
+          setResT({
+            path: s,
+            value: price
+          })
+        }
       } else {
         for(const [j, a] of matrix[i].entries()) {
           if (a > 0 && !lRes.some(x => x === j)) {
-            lRes.push(j)
+            if (branch && minPrice && price > minPrice) {
+              setRes(`${s} X`)
+              await sleep(time)
+            } else {
+              lRes.push(j)
+            setRes(s)
+            setPri(price + a)
+            await sleep(time)
             await Try(j, price + a, lRes)
             lRes.pop()
+            }
           }
         }
       }
     }
-    await Try(0, matrix[0][0], [0])
+    await Try(0, 0, [0])
   })
 
   return (
@@ -95,6 +114,28 @@ const Traveler = Form.create({ name: 'traveler' })(
           onChange={value => onChangeNumberCity(value)}
           disabled={disable}
         />
+      </div>
+      <div className='input'>
+          <label style={{ marginRight: 20 }} htmlFor='time'>
+            Time (ms):
+          </label>
+          <InputNumber
+            id='time'
+            defaultValue={time}
+            min={0}
+            max={10000}
+            onChange={value => setTime(value)}
+            disabled={disable}
+          />
+          <label style={{ marginLeft: 28, marginRight: 20 }} htmlFor='branch'>
+          Nhánh cận:
+          </label>
+          <Checkbox
+            id='branch'
+            defaultValue={branch}
+            onChange={value => setBranch(value.target.checked)}
+            disabled={disable}
+          />
       </div>
       <div className='matrix-content'>
         {
@@ -123,11 +164,24 @@ const Traveler = Form.create({ name: 'traveler' })(
       >
         Bắt đầu
       </Button>
-      <div className='path'>
-        {disable && res.map((r, i) => (
-          <div key={i}>{r}</div>
-        ))}
-      </div>
+      { disable &&
+        (
+          <>
+            <div className='path'>
+              <div>Đường đi</div>
+              <div>Chi phí</div>
+            </div>
+            <div className='path'>
+              {res}
+              <div>{pri}</div>
+            </div>
+            <div className='path' style={{ flexDirection: 'column' }}>
+              <div>Đường đi tối ưu: {resT.path}</div>
+              <div>Chi phí thấp nhất: {resT.value}</div>
+            </div>
+          </>
+        )
+      }
     </>
   )
 })

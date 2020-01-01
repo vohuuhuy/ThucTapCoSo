@@ -28,7 +28,9 @@ function ExpressionZero (props) {
         }
       } else {
         for (let j = 0; j<= 1; j++) {
-          await sleep(time)
+          if ((j === 0 && operation[i] === '-') || (j === 1 && operation[i] === '+')) {
+            await sleep(time)
+          }
           operation = operation.map((ope, idx) => idx === i ? (!j ? '+' : '-') : ope)
           setOpera(operation)
           if (!j) {
@@ -104,38 +106,46 @@ function ExpressionZero (props) {
           </label>
           <InputNumber
             id='time'
-            defaultValue={0}
+            defaultValue={time}
             min={0}
-            max={1000}
+            max={10000}
             onChange={value => setTime(value)}
             disabled={disInput}
           />
         </div>
         <div style={{
           display: 'flex', alignItems: 'center', fontSize: 20,
-          justifyItems: 'center', justifyContent: 'space-evenly'
+          justifyItems: 'space-between', justifyContent: 'space-evenly'
         }}>
-          {element.map((ele, idx) => (
-            <>
-              <div style={{ width: 22 }}>
-                {
-                  disInput ? opera[idx] : ''
-                }
-              </div>
-              <InputNumber
-                style={{ boxSizing: 'border-box', marginRight: 5 }}
-                defaultValue={ele}
-                key={idx}
-                disabled={disInput}
-                onChange={value => setElement(element.map((ele, i) =>
-                  i === idx ? value : ele
-                ))}
-              />
-            </>
-          ))}
-          {
-            disInput ? ` =  ${conSum()}` : ''
-          }
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyItems: 'center',
+            justifyContent: 'space-evenly'
+          }}>
+            {element.map((ele, idx) => (
+              <>
+                <div style={{ width: 22 }}>
+                  {
+                    disInput ? opera[idx] : ''
+                  }
+                </div>
+                <InputNumber
+                  style={{ boxSizing: 'border-box', marginRight: 5 }}
+                  defaultValue={ele}
+                  value={ele}
+                  key={idx}
+                  disabled={disInput}
+                  onChange={value => setElement(element.map((ele, i) =>
+                    i === idx ? value : ele
+                  ))}
+                />
+              </>
+            ))}
+          </div>
+          <div>
+            {
+              disInput ? ` = ${conSum()}` : ''
+            }
+          </div>
         </div>
         <div style={{ marginTop: 20, marginBottom: 20 }}>
           {
