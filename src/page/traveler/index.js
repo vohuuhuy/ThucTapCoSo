@@ -49,7 +49,7 @@ const Traveler = Form.create({ name: 'traveler' })(
       setNumCity(value)
       setMatrix(a)
     }
-  , [numCity])
+  , [])
 
   const onChangeCity = useCallback((value, i, j) => {
     setMatrix(matrix.map((a, l) => a.map((b, k) =>
@@ -90,7 +90,7 @@ const Traveler = Form.create({ name: 'traveler' })(
       }
     }
     await Try(0, 0, [0])
-  })
+  }, [branch, matrix, numCity, time])
 
   return (
     <>
