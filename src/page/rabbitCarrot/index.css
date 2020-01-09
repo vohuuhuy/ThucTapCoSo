@@ -1,0 +1,27 @@
+.map {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.row {
+  display: flex;
+}
+.cell:hover {
+  cursor: pointer;
+}
+.cell {
+  width: 25px;
+  height: 25px;
+  background: white;
+  margin: 1px;
+}
+.rabbit {
+  background-image: url(../image/rabbit.png) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+.carrot {
+  background-image: url(../image/carrot.png) !important;
+  background-size: cover !important;
+}

@@ -18,7 +18,7 @@ const Traveler = Form.create({ name: 'traveler' })(
   const modalDetail = () => {
     Modal.info({
       title: (<div className='detail-title'>Người đi du lịch</div>),
-      content: ( <div className='detai-content'>
+      content: ( <div className='detail-content'>
         Cho n thành phố đánh số từ 1 đến n và m tuyến đường giao thông hai chiều giữa chúng
         , mạng lưới giao thông này được cho bởi bảng C cấp nxn, ở đây
          C[i, j] = C[j, i] = Chi phí đi đoạn đường trực tiếp từ thành phố i đến thành phố j
@@ -99,7 +99,7 @@ const Traveler = Form.create({ name: 'traveler' })(
         <Icon
           className='icon-detail'
           type='info-circle'
-          onClick={modalDetail} 
+          onClick={modalDetail}
         />
       </p>
       <div className='input'>
