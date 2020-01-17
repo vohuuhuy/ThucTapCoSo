@@ -79,11 +79,11 @@ const Traveler = Form.create({ name: 'traveler' })(
               await sleep(time)
             } else {
               lRes.push(j)
-            setRes(s)
-            setPri(price + a)
-            await sleep(time)
-            await Try(j, price + a, lRes)
-            lRes.pop()
+              setRes(s)
+              setPri(price + a)
+              await sleep(time)
+              await Try(j, price + a, lRes)
+              lRes.pop()
             }
           }
         }
