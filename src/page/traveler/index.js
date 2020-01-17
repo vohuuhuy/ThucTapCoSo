@@ -116,26 +116,26 @@ const Traveler = Form.create({ name: 'traveler' })(
         />
       </div>
       <div className='input'>
-          <label style={{ marginRight: 20 }} htmlFor='time'>
-            Time (ms):
-          </label>
-          <InputNumber
-            id='time'
-            defaultValue={time}
-            min={0}
-            max={10000}
-            onChange={value => setTime(value)}
-            disabled={disable}
-          />
-          <label style={{ marginLeft: 28, marginRight: 20 }} htmlFor='branch'>
-          Nhánh cận:
-          </label>
-          <Checkbox
-            id='branch'
-            defaultValue={branch}
-            onChange={value => setBranch(value.target.checked)}
-            disabled={disable}
-          />
+        <label style={{ marginRight: 20 }} htmlFor='time'>
+          Time (ms):
+        </label>
+        <InputNumber
+          id='time'
+          defaultValue={time}
+          min={0}
+          max={10000}
+          onChange={value => setTime(value)}
+          disabled={disable}
+        />
+        <label style={{ marginLeft: 28, marginRight: 20 }} htmlFor='branch'>
+        Nhánh cận:
+        </label>
+        <Checkbox
+          id='branch'
+          defaultValue={branch}
+          onChange={value => setBranch(value.target.checked)}
+          disabled={disable}
+        />
       </div>
       <div className='matrix-content'>
         {
