@@ -3,7 +3,6 @@ import { Form, Icon, Modal, InputNumber, Button, Checkbox } from 'antd'
 import BackHome from '../backHome'
 import './index.css'
 import { sleep } from '../../common'
-let map = [[2]]
 class RabbitCarrot extends React.Component {
   constructor (props) {
     super (props)
@@ -13,8 +12,10 @@ class RabbitCarrot extends React.Component {
       carrot: { x: 0, y: 0 },
       disable: false,
       branch: false,
-      time: 0
+      time: 0,
+      result: [[2]]
     }
+    this.map = [[2]]
   }
   modalDetail = () => {
     Modal.info({
@@ -36,21 +37,31 @@ class RabbitCarrot extends React.Component {
     for (let i = 0; i < row; i++) {
       a.push(b)
     }
-    map = a.map((row, i) => row.length ? row.map((col, j) => !i && !j ? 2 : col) : row)
+    this.map = a.map((row, i) => row.length ? row.map((col, j) => !i && !j ? 2 : col) : row)
     this.setState(prevState => {
       prevState.render = !prevState.render
       return prevState
     })
   }
   handleClickCell = (i, j) => {
-    map = map.map((row, is) => row.length && row.map((col, js) => i === is && j === js ? !col ? 1 : 0 : col))
+    this.map = this.map.map((row, is) => row.length && row.map((col, js) => i === is && j === js ? !col ? 1 : 0 : col))
     this.setState(prevState => {
       prevState.render = !prevState.render
       return prevState
     })
   }
+  countPath = async (end = false) => {
+    const mapTmp = this.map
+    let count = 0
+    mapTmp.forEach((row, i) => row.forEach((col, j) => {
+      if (col === 2 || col === 3) {
+        count++
+      }
+    }))
+    return { count, mapTmp }
+  }
   onClickStart = async () => {
-    const { carrot, time } = this.state
+    const { carrot, time, branch } = this.state
     this.setState({ disable: true })
     const move = {
       top: { x: -1, y: 0 },
@@ -59,30 +70,35 @@ class RabbitCarrot extends React.Component {
       left: { x: 0, y: -1 }
     }
     const keyMove = Object.keys(move)
+    this.minCount = this.map.length * this.map[0].length
     const Try = async local => {
+      const { count } = await this.countPath()
       if (local.x === carrot.x && local.y === carrot.y) {
-        this.setState(prevState => {
-          prevState.render = !prevState.render
-          return prevState
-        })
-        await sleep(time)
+        if (count <= this.minCount) {
+          this.minCount = count
+          this.setState(prevState => {
+            return prevState
+          })
+        }
       } else {
-        for (const key of keyMove) {
-          const exaX = local.x + move[key].x
-          const exaY = local.y + move[key].y
-          if (0 <= exaX && exaX < map.length && 0 <= exaY && exaY < map[0].length
-            && map[exaX][exaY] === 0
-          ) {
-            map[local.x][local.y] = 3
-            map[exaX][exaY] = 2
-            this.setState(prevState => {
-              prevState.render = !prevState.render
-              return prevState
-            })
-            await sleep(time)
-            await Try({ x: exaX, y: exaY })
-            map[exaX][exaY] = 0
-            map[local.x][local.y] = 2
+        if (!branch || (branch && this.minCount >= count)) {
+          for (const key of keyMove) {
+            const exaX = local.x + move[key].x
+            const exaY = local.y + move[key].y
+            if (0 <= exaX && exaX < this.map.length && 0 <= exaY && exaY < this.map[0].length
+              && this.map[exaX][exaY] === 0
+            ) {
+              await sleep(time)
+              this.map[local.x][local.y] = 3
+              this.map[exaX][exaY] = 2
+              this.setState(prevState => {
+                prevState.render = !prevState.render
+                return prevState
+              })
+              await Try({ x: exaX, y: exaY })
+              this.map[exaX][exaY] = 0
+              this.map[local.x][local.y] = 2
+            }
           }
         }
       }
@@ -111,7 +127,7 @@ class RabbitCarrot extends React.Component {
             defaultValue={1}
             min={1}
             max={15}
-            onChange={value => this.onChangeMap({ row: value, col: map.length ? map[0].length : 1 })}
+            onChange={value => this.onChangeMap({ row: value, col: this.map.length ? this.map[0].length : 1 })}
             autoFocus={false}
             disabled={this.state.disable}
           />
@@ -125,7 +141,7 @@ class RabbitCarrot extends React.Component {
             defaultValue={1}
             min={1}
             max={15}
-            onChange={value => this.onChangeMap({ row: map.length ? map.length: 1, col: value })}
+            onChange={value => this.onChangeMap({ row: this.map.length ? this.map.length: 1, col: value })}
             autoFocus={false}
             disabled={this.state.disable}
           />
@@ -164,7 +180,7 @@ class RabbitCarrot extends React.Component {
               id='elementNumber3'
               defaultValue={0}
               min={0}
-              max={map.length ? map[0].length - 1 : 0}
+              max={this.map.length ? this.map[0].length - 1 : 0}
               onChange={value => this.setState(prevState => {
                 prevState.carrot.x = value
                 return prevState
@@ -180,7 +196,7 @@ class RabbitCarrot extends React.Component {
               id='elementNumber4'
               defaultValue={0}
               min={0}
-              max={map.length - 1}
+              max={this.map.length - 1}
               onChange={value => this.setState(prevState => {
                 prevState.carrot.y = value
                 return prevState
@@ -192,7 +208,7 @@ class RabbitCarrot extends React.Component {
         </div>
         <div className='map'>
           {
-            map.map((row, i) => (
+            this.map.map((row, i) => (
               <div className='row' key={i}>
                 {
                   row.map((col, j) => (
@@ -215,6 +231,11 @@ class RabbitCarrot extends React.Component {
         >
           Bắt đầu
         </Button>
+        { this.state.disable && ( <p>{
+          this.minCount !== this.map.length * this.map[0].length
+          ? `Số bước đi ít nhất: ${this.minCount}`
+          : 'Chưa có đường đi!'
+        }</p> ) }
       </>
     )
   }

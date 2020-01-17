@@ -21,6 +21,16 @@ export default function Home (props) {
           { route.name }
         </Button>
       ))}
+      <div>
+        <Button
+          style={{ color: 'rgb(75, 182, 226)', marginRight: 10 }}
+          onClick={()=> window.open('https://docs.google.com/document/d/1ys9am7s_5lXFqE6rPFfFnOFgcxpyDxH1hd6kHtbmkg4/edit?usp=sharing', '_blank')}
+        >Báo cáo</Button>
+        <Button
+          style={{ color: 'rgb(75, 182, 226)' }}
+          onClick={()=> window.open('https://github.com/vohuuhuy/ThucTapCoSo', '_blank')}
+        >Source Code</Button>
+      </div>
     </div>
   )
 }
